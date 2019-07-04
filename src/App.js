@@ -104,7 +104,7 @@ const schema = {
       text: "Owner",
       methods: {
         is: { text: "is", type: "text", tail: "" },
-        isNot: { text: "is not", type: "text", tail: "" },
+        isNot: { text: "is", type: "text", tail: "years old" },
         length: { text: "length", type: "number", tail: "" }
       },
       icon: "user-tie"
@@ -324,7 +324,7 @@ const editFilterFlyoutCss = css({
   left: 0
 });
 
-const EditFilterFlyout = ({ data, done }) => {
+const EditFilterFlyout = ({ data, done, setMethod, setValue }) => {
   const Input =
     schema.types[schema.filterTypes[data.type].methods[data.method].type].input;
   return (
@@ -335,12 +335,20 @@ const EditFilterFlyout = ({ data, done }) => {
             <input
               name="FiUt3gXEG2zBnuwA39NL"
               type="radio"
+              data-method={method}
               checked={method === data.method}
+              onChange={e => {
+                if (e.target.checked) setMethod(e.target.dataset.method);
+              }}
             />{" "}
             {schema.filterTypes[data.type].methods[method].text}
           </div>
-          {data.method === method && <Input />}
-          {schema.filterTypes[data.type].methods[method].tail}
+          {data.method === method && (
+            <div>
+              <Input value={data.value} setValue={setValue} />
+              {schema.filterTypes[data.type].methods[method].tail}
+            </div>
+          )}
         </React.Fragment>
       ))}
       <div className={flyoutOption} onClick={done}>
@@ -370,7 +378,13 @@ const filterButtonCss = css({
   padding: mainPadding
 });
 
-const Filter = ({ data, clientClassList, deleteFilter }) => {
+const Filter = ({
+  data,
+  clientClassList,
+  deleteFilter,
+  setMethod,
+  setValue
+}) => {
   const [editing, setEditing] = useState(false);
   const filterSchema = schema.filterTypes[data.type];
   const classes = [
@@ -396,6 +410,7 @@ const Filter = ({ data, clientClassList, deleteFilter }) => {
         {data.value !== null ? data.value : <i>...</i>}
         <span
           className={css({ paddingLeft: mainPadding })}
+          setValue
           onClick={e => {
             e.stopPropagation();
             deleteFilter();
@@ -406,6 +421,8 @@ const Filter = ({ data, clientClassList, deleteFilter }) => {
         {editing && (
           <div className={baselineCss}>
             <EditFilterFlyout
+              setMethod={setMethod}
+              setValue={setValue}
               data={data}
               done={e => {
                 e.stopPropagation();
@@ -464,7 +481,9 @@ const FilterGroup = ({
   data,
   filterGroupIndex,
   toggleFilterGroupOperand,
-  deleteFilter
+  deleteFilter,
+  setFilterMethod,
+  setFilterValue
 }) =>
   data.filters.map((filter, i) => (
     <React.Fragment key={i}>
