@@ -3,14 +3,9 @@ import { css } from "glamor";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { fas } from "@fortawesome/pro-solid-svg-icons";
+import FieldRadioGroup from "@atlaskit/field-radio-group";
 
 library.add(fas);
-
-/**
- *
- * config
- *
- */
 
 const mainPadding = "0.7rem";
 const borderRadius = "0.2rem";
@@ -19,8 +14,23 @@ const colorDangerLight = "#fdd";
 const colorAction = "#55f";
 const colorActionLight = "#ddf";
 
+const TextInput = ({}) => <input />;
+
 const schema = {
-  types: { text: {}, bool: {}, number: {}, options: {} },
+  types: {
+    text: {
+      input: TextInput
+    },
+    bool: {
+      input: TextInput
+    },
+    number: {
+      input: TextInput
+    },
+    options: {
+      input: TextInput
+    }
+  },
   filterTypesIndex: [
     "street",
     "suburb",
@@ -39,117 +49,117 @@ const schema = {
     streetNumber: {
       text: "Street Number",
       methods: {
-        is: { text: "is", type: "text" },
-        isNot: { text: "is not", type: "text" },
-        length: { text: "length", type: "number" }
+        is: { text: "is", type: "text", tail: "" },
+        isNot: { text: "is not", type: "text", tail: "" },
+        length: { text: "length", type: "number", tail: "" }
       },
       icon: "mailbox"
     },
     street: {
       text: "Street",
       methods: {
-        is: { text: "is", type: "text" },
-        isNot: { text: "is not", type: "text" },
-        length: { text: "length", type: "number" }
+        is: { text: "is", type: "text", tail: "" },
+        isNot: { text: "is not", type: "text", tail: "" },
+        length: { text: "length", type: "number", tail: "" }
       },
       icon: "map-signs"
     },
     suburb: {
       text: "Suburb",
       methods: {
-        is: { text: "is", type: "text" },
-        isNot: { text: "is not", type: "text" },
-        length: { text: "length", type: "number" }
+        is: { text: "is", type: "text", tail: "" },
+        isNot: { text: "is not", type: "text", tail: "" },
+        length: { text: "length", type: "number", tail: "" }
       },
       icon: "map-marked"
     },
     bedrooms: {
       text: "Bedrooms",
       methods: {
-        is: { text: "is", type: "text" },
-        isNot: { text: "is not", type: "text" },
-        length: { text: "length", type: "number" }
+        is: { text: "is", type: "text", tail: "" },
+        isNot: { text: "is not", type: "text", tail: "" },
+        length: { text: "length", type: "number", tail: "" }
       },
       icon: "bed"
     },
     bathrooms: {
       text: "Bathrooms",
       methods: {
-        is: { text: "is", type: "text" },
-        isNot: { text: "is not", type: "text" },
-        length: { text: "length", type: "number" }
+        is: { text: "is", type: "text", tail: "" },
+        isNot: { text: "is not", type: "text", tail: "" },
+        length: { text: "length", type: "number", tail: "" }
       },
       icon: "bath"
     },
     postcode: {
       text: "Postcode",
       methods: {
-        is: { text: "is", type: "text" },
-        isNot: { text: "is not", type: "text" },
-        length: { text: "length", type: "number" }
+        is: { text: "is", type: "text", tail: "" },
+        isNot: { text: "is not", type: "text", tail: "" },
+        length: { text: "length", type: "number", tail: "" }
       },
       icon: "location"
     },
     owner: {
       text: "Owner",
       methods: {
-        is: { text: "is", type: "text" },
-        isNot: { text: "is not", type: "text" },
-        length: { text: "length", type: "number" }
+        is: { text: "is", type: "text", tail: "" },
+        isNot: { text: "is not", type: "text", tail: "" },
+        length: { text: "length", type: "number", tail: "" }
       },
       icon: "user-tie"
     },
     tenant: {
       text: "Tenant",
       methods: {
-        is: { text: "is", type: "text" },
-        isNot: { text: "is not", type: "text" },
-        length: { text: "length", type: "number" }
+        is: { text: "is", type: "text", tail: "" },
+        isNot: { text: "is not", type: "text", tail: "" },
+        length: { text: "length", type: "number", tail: "" }
       },
       icon: "user"
     },
     tags: {
       text: "Tags",
       methods: {
-        is: { text: "is", type: "text" },
-        isNot: { text: "is not", type: "text" },
-        length: { text: "length", type: "number" }
+        is: { text: "is", type: "text", tail: "" },
+        isNot: { text: "is not", type: "text", tail: "" },
+        length: { text: "length", type: "number", tail: "" }
       },
       icon: "tags"
     },
     appraisal: {
       text: "Appraisal",
       methods: {
-        is: { text: "is", type: "text" },
-        isNot: { text: "is not", type: "text" },
-        length: { text: "length", type: "number" }
+        is: { text: "is", type: "text", tail: "" },
+        isNot: { text: "is not", type: "text", tail: "" },
+        length: { text: "length", type: "number", tail: "" }
       },
       icon: "clipboard-list-check"
     },
     listing: {
       text: "Listing",
       methods: {
-        is: { text: "is", type: "text" },
-        isNot: { text: "is not", type: "text" },
-        length: { text: "length", type: "number" }
+        is: { text: "is", type: "text", tail: "" },
+        isNot: { text: "is not", type: "text", tail: "" },
+        length: { text: "length", type: "number", tail: "" }
       },
       icon: "toggle-on"
     },
     contract: {
       text: "Contract",
       methods: {
-        is: { text: "is", type: "text" },
-        isNot: { text: "is not", type: "text" },
-        length: { text: "length", type: "number" }
+        is: { text: "is", type: "text", tail: "" },
+        isNot: { text: "is not", type: "text", tail: "" },
+        length: { text: "length", type: "number", tail: "" }
       },
       icon: "file-signature"
     },
     user: {
       text: "User",
       methods: {
-        is: { text: "is", type: "text" },
-        isNot: { text: "is not", type: "text" },
-        length: { text: "length", type: "number" }
+        is: { text: "is", type: "text", tail: "" },
+        isNot: { text: "is not", type: "text", tail: "" },
+        length: { text: "length", type: "number", tail: "" }
       },
       icon: "user"
     }
@@ -169,12 +179,6 @@ const initialState = [
   }
 ];
 
-/**
- *
- * app
- *
- */
-
 function classList() {
   var classes = Array.prototype.slice
     .call(arguments)
@@ -188,6 +192,7 @@ function classList() {
 const buttonResetCss = css({
   backgroundColor: "transparent",
   boxShadow: "none",
+  cursor: "pointer",
   border: "none"
 });
 
@@ -218,6 +223,7 @@ const baselineCss = css({
 
 const flyoutCss = css({
   backgroundColor: "#fafafa",
+  color: "#333",
   borderRadius,
   border: "1px solid #eee",
   boxShadow: "0.1rem 0.1rem 0.5rem rgba(0,0,0,0.1)"
@@ -229,6 +235,7 @@ const flyoutOption = css({
   boxSizing: "border-box",
   textAlign: "left",
   padding: "0.5rem",
+  cursor: "pointer",
   ":hover": {
     backgroundColor: "#eee"
   }
@@ -245,31 +252,42 @@ const addFilterFlyoutCss = css({
 const AddFilterFlyout = ({ addFilter, i, done }) => (
   <div className={classList(flyoutCss, addFilterFlyoutCss)}>
     {schema.filterTypesIndex.map(type => (
-      <button
-        className={classList(buttonResetCss, flyoutOption)}
-        onClick={() => addFilter(i, type)}
+      <div
+        key={type}
+        className={flyoutOption}
+        onClick={e => {
+          e.stopPropagation();
+          addFilter(i, type);
+        }}
       >
         <FontAwesomeIcon icon={schema.filterTypes[type].icon} />{" "}
         {schema.filterTypes[type].text}
-      </button>
+      </div>
     ))}
-    <button className={classList(buttonResetCss, flyoutOption)} onClick={done}>
+    <div
+      className={flyoutOption}
+      onClick={e => {
+        e.stopPropagation();
+        done();
+      }}
+    >
       Done
-    </button>
+    </div>
   </div>
 );
 
 const addFilterButtonCss = css({
   position: "relative",
-  float: "left"
+  cursor: "pointer",
+  float: "left",
+  marginLeft: "0.1rem"
 });
 
 const addFilterButtonButtonCss = css({
   float: "left",
   padding: mainPadding,
   backgroundColor: "#fafafa",
-  display: "inline-block",
-  marginLeft: "0.1rem"
+  display: "inline-block"
 });
 
 const AddFilterButton = ({ addFilter, i }) => {
@@ -307,20 +325,27 @@ const editFilterFlyoutCss = css({
 });
 
 const EditFilterFlyout = ({ data, done }) => {
+  const Input =
+    schema.types[schema.filterTypes[data.type].methods[data.method].type].input;
   return (
     <div className={classList(flyoutCss, editFilterFlyoutCss)}>
       {Object.keys(schema.filterTypes[data.type].methods).map(method => (
-        <div className={flyoutOption}>
-          <input type="radio" />{" "}
-          {schema.filterTypes[data.type].methods[method].text}
-        </div>
+        <React.Fragment>
+          <div key={method} className={flyoutOption}>
+            <input
+              name="FiUt3gXEG2zBnuwA39NL"
+              type="radio"
+              checked={method === data.method}
+            />{" "}
+            {schema.filterTypes[data.type].methods[method].text}
+          </div>
+          {data.method === method && <Input />}
+          {schema.filterTypes[data.type].methods[method].tail}
+        </React.Fragment>
       ))}
-      <button
-        className={classList(buttonResetCss, flyoutOption)}
-        onClick={done}
-      >
+      <div className={flyoutOption} onClick={done}>
         Done
-      </button>
+      </div>
     </div>
   );
 };
@@ -333,6 +358,7 @@ const filterCss = css({
   color: "#333",
   boxShadow: "none",
   border: "none",
+  cursor: "pointer",
   ":hover": {
     backgroundColor: colorActionLight,
     color: colorAction
@@ -357,7 +383,7 @@ const Filter = ({ data, clientClassList, deleteFilter }) => {
     <div className={filterCss}>
       <button
         className={classList(...classes)}
-        onClick={() => setEditing(true)}
+        onClick={setEditing ? () => setEditing(true) : null}
       >
         <FontAwesomeIcon
           icon={filterSchema.icon}
@@ -367,7 +393,7 @@ const Filter = ({ data, clientClassList, deleteFilter }) => {
         <span className={filterMethodCss}>
           {filterSchema.methods[data.method].text}
         </span>{" "}
-        {data.value !== null ? data.value : <u>missing value</u>}
+        {data.value !== null ? data.value : <i>...</i>}
         <span
           className={css({ paddingLeft: mainPadding })}
           onClick={e => {
@@ -381,8 +407,8 @@ const Filter = ({ data, clientClassList, deleteFilter }) => {
           <div className={baselineCss}>
             <EditFilterFlyout
               data={data}
-              done={() => {
-                console.log("wraar", setEditing);
+              done={e => {
+                e.stopPropagation();
                 setEditing(false);
               }}
             />
@@ -412,17 +438,20 @@ const filterGroupOperandCss = css({
   background: "#eee",
   fontWeight: 700,
   color: "#777",
+  cursor: "pointer",
   ":hover": {
     backgroundColor: colorActionLight,
     color: colorAction
   }
 });
 
-const addFilterGroupCss = css({
+const actionsCss = css({
+  position: "relative",
   float: "left",
   padding: mainPadding,
   display: "inline-block",
   fontWeight: 700,
+  cursor: "pointer",
   color: colorAction
 });
 
@@ -438,7 +467,7 @@ const FilterGroup = ({
   deleteFilter
 }) =>
   data.filters.map((filter, i) => (
-    <React.Fragment>
+    <React.Fragment key={i}>
       <Filter
         deleteFilter={() => deleteFilter(i)}
         data={filter}
@@ -490,14 +519,14 @@ export default () => {
     ]);
   };
 
-  const addFilterGroup = () => {
+  const addFilterGroup = type => {
     setFilterGroups([
       ...filterGroups,
       {
         operand: "and",
         filters: [
           {
-            type: schema.filterTypesIndex[0],
+            type: type,
             method: Object.keys(
               schema.filterTypes[schema.filterTypesIndex[0]].methods
             )[0],
@@ -521,7 +550,7 @@ export default () => {
 
   return [
     filterGroups.map((filterGroup, i) => (
-      <div className={filterGroupCss}>
+      <div key={i} className={filterGroupCss}>
         <FilterGroup
           data={filterGroup}
           filterGroupIndex={i}
@@ -541,7 +570,7 @@ export default () => {
     )),
     <button
       onClick={() => setAddingFilterGroup(true)}
-      className={classList(addFilterGroupCss, buttonResetCss)}
+      className={classList(actionsCss, buttonResetCss)}
     >
       + Add Filter
       {addingFilterGroup && (
@@ -558,7 +587,7 @@ export default () => {
     </button>,
     <button
       onClick={() => saveSegment({ filterGroups, operand })}
-      className={classList(addFilterGroupCss, buttonResetCss)}
+      className={classList(actionsCss, buttonResetCss)}
     >
       <FontAwesomeIcon icon="chart-pie" /> Save Segment
     </button>
