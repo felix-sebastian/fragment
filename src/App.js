@@ -11,16 +11,35 @@ import { faHome } from "@fortawesome/free-solid-svg-icons";
 
 const mainPadding = "0.7rem";
 const borderRadius = "0.2rem";
-const colorDanger = "#f33";
+const colorDanger = "#f55";
 const colorDangerLight = "#fdd";
-const colorAction = "#33f";
+const colorAction = "#55f";
 const colorActionLight = "#ddf";
 
 const schema = {
   types: { text: {}, bool: {}, number: {}, options: {} },
-  fragments: {
+  filterTypesIndex: ["address", "firstName", "lastName"],
+  filterTypes: {
     address: {
       text: "Address",
+      methods: {
+        is: { text: "is", type: "text" },
+        isNot: { text: "is not", type: "text" },
+        length: { text: "length", type: "number" }
+      },
+      icon: faHome
+    },
+    firstName: {
+      text: "First Name",
+      methods: {
+        is: { text: "is", type: "text" },
+        isNot: { text: "is not", type: "text" },
+        length: { text: "length", type: "number" }
+      },
+      icon: faHome
+    },
+    lastName: {
+      text: "Last Name",
       methods: {
         is: { text: "is", type: "text" },
         isNot: { text: "is not", type: "text" },
@@ -34,7 +53,7 @@ const schema = {
 const initialState = [
   {
     operand: "or",
-    fragments: [
+    filters: [
       {
         type: "address",
         method: "is",
@@ -49,7 +68,7 @@ const initialState = [
   },
   {
     operand: "and",
-    fragments: [
+    filters: [
       {
         type: "address",
         method: "is",
@@ -57,10 +76,9 @@ const initialState = [
       }
     ]
   },
-
   {
     operand: "or",
-    fragments: [
+    filters: [
       {
         type: "address",
         method: "length",
@@ -76,17 +94,140 @@ const initialState = [
  *
  */
 
-const fragmentCss = css({
+function classList() {
+  var classes = Array.prototype.slice
+    .call(arguments)
+    .filter(
+      className => className !== null && typeof className !== typeof undefined
+    )
+    .map(css => css.toString());
+  var result = classes.join(" ");
+  return result;
+}
+
+const buttonResetCss = css({
+  backgroundColor: "transparent",
+  boxShadow: "none",
+  border: "none"
+});
+
+const roundedLeft = css({
+  borderRadius: `${borderRadius} 0 0 ${borderRadius}`
+});
+
+const roundedRight = css({
+  borderRadius: `0 ${borderRadius} ${borderRadius} 0`
+});
+
+const filterMethodCss = css({
+  fontWeight: "400"
+});
+
+const addFilterButtonCss = css({
+  float: "left",
+  padding: mainPadding,
+  backgroundColor: "#fafafa",
+  display: "inline-block",
+  marginLeft: "0.1rem"
+});
+
+const filterMissingValueCss = css({
+  backgroundColor: colorDangerLight,
+  color: colorDanger
+});
+
+const baselineCss = css({
+  position: "absolute",
+  bottom: 0,
+  left: 0,
+  right: 0
+});
+
+const addFilterCss = css({
+  position: "absolute",
+  width: 200,
+  backgroundColor: "#fff",
+  border: "1px solid #333",
+  top: "0.5rem",
+  left: 0
+});
+
+const AddFilterOptionCss = css({
+  display: "block",
+  width: "100%",
+  textAlign: "left",
+  padding: "0.5rem",
+  ":hover": {
+    backgroundColor: "#fafafa"
+  }
+});
+
+const AddFilter = ({ addFilter, i, done }) => (
+  <div className={addFilterCss}>
+    {schema.filterTypesIndex.map(type => (
+      <button
+        className={classList(buttonResetCss, AddFilterOptionCss)}
+        onClick={() => addFilter(i, type)}
+      >
+        <FontAwesomeIcon icon={schema.filterTypes[type].icon} />{" "}
+        {schema.filterTypes[type].text}
+      </button>
+    ))}
+    <button
+      className={classList(buttonResetCss, AddFilterOptionCss)}
+      onClick={done}
+    >
+      Done
+    </button>
+  </div>
+);
+
+const AddFilterButton = ({ addFilter, i }) => {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className={buttonResetCss}>
+      <button
+        onClick={() => setOpen(true)}
+        className={classList(buttonResetCss, addFilterButtonCss)}
+      >
+        +
+      </button>
+      <div className={baselineCss}>
+        {open && (
+          <AddFilter
+            addFilter={(i, type) => {
+              setOpen(false);
+              addFilter(i, type);
+            }}
+            i={i}
+            done={() => setOpen(false)}
+          />
+        )}
+      </div>
+    </div>
+  );
+};
+
+const editFilterCss = css({
+  textAlign: "left",
+  width: 200,
+  position: "absolute",
+  top: 0,
+  left: 0
+});
+
+const EditFilter = ({ data }) => <div className={editFilterCss}>Hi</div>;
+
+const filterCss = css({
   float: "left"
 });
 
-const fragmentMainCss = css({
+const filterButtonCss = css({
+  position: "relative",
   padding: mainPadding,
-  borderRadius: borderRadius,
+  fontWeight: 600,
   backgroundColor: "#eee",
   display: "inline-block",
-  color: "#333",
-  boxShadow: "none",
   border: "none",
   ":hover": {
     backgroundColor: colorActionLight,
@@ -94,71 +235,30 @@ const fragmentMainCss = css({
   }
 });
 
-const fragmentFilterCss = css({
-  fontWeight: "300"
-});
-
-const addFragmentCss = css({
-  float: "right"
-});
-
-const addFragmentButtonCss = css({
-  float: "left",
-  padding: mainPadding,
-  borderRadius: borderRadius,
-  backgroundColor: "#fafafa",
-  display: "inline-block",
-  border: "none",
-  boxShadow: "none",
-  marginLeft: "0.1rem"
-});
-
-const fragmentMissingValueCss = css({
-  backgroundColor: colorDangerLight,
-  color: colorDanger
-});
-
-const AddFragmentWindow = ({ addFragment, i }) => (
-  <div>
-    <button onClick={() => addFragment(i, "address")}>Add</button>
-  </div>
-);
-
-const AddFragment = ({ addFragment, i }) => {
-  const [open, setOpen] = useState(false);
+const Filter = ({ data }) => {
+  const [editing, setEditing] = useState(false);
+  const filterSchema = schema.filterTypes[data.type];
   return (
-    <div className={addFragmentCss}>
-      <button onClick={() => setOpen(true)} className={addFragmentButtonCss}>
-        +
-      </button>
-      {open && (
-        <AddFragmentWindow
-          addFragment={(i, type) => {
-            setOpen(false);
-            addFragment(i, type);
-          }}
-          i={i}
-        />
-      )}
-    </div>
-  );
-};
-
-const Fragment = ({ data }) => {
-  const fragmentSchema = schema.fragments[data.type];
-  return (
-    <div className={fragmentCss}>
+    <div className={filterCss}>
       <button
-        className={`${fragmentMainCss} ${
-          data.value === null ? fragmentMissingValueCss : ""
-        }`}
+        className={classList(
+          filterButtonCss,
+          buttonResetCss,
+          data.value === null ? filterMissingValueCss : null
+        )}
+        onClick={() => setEditing(true)}
       >
-        <FontAwesomeIcon icon={fragmentSchema.icon} /> {fragmentSchema.text}
-        <span className={fragmentFilterCss}>
+        <FontAwesomeIcon icon={filterSchema.icon} /> {filterSchema.text}
+        <span className={filterMethodCss}>
           {" "}
-          {fragmentSchema.methods[data.method].text}
+          {filterSchema.methods[data.method].text}
         </span>{" "}
         {data.value !== null ? data.value : "missing value"}
+        {editing && (
+          <div className={baselineCss}>
+            <EditFilter />
+          </div>
+        )}
       </button>
     </div>
   );
@@ -167,11 +267,7 @@ const Fragment = ({ data }) => {
 const globalOperandCss = css({
   float: "right",
   padding: mainPadding,
-  borderRadius: borderRadius,
   display: "inline-block",
-  background: "none",
-  border: "none",
-  boxShadow: "none",
   fontWeight: 700,
   ":hover": {
     backgroundColor: colorActionLight,
@@ -179,14 +275,12 @@ const globalOperandCss = css({
   }
 });
 
-const blockOperandCss = css({
+const filterGroupOperandCss = css({
   float: "left",
   padding: mainPadding,
   margin: "0 0.1rem",
   display: "inline-block",
   background: "#eee",
-  border: "none",
-  boxShadow: "none",
   fontWeight: 700,
   color: "#777",
   ":hover": {
@@ -195,32 +289,28 @@ const blockOperandCss = css({
   }
 });
 
-const addBlockCss = css({
+const addFilterGroupCss = css({
   float: "left",
   padding: mainPadding,
-  borderRadius: borderRadius,
   display: "inline-block",
-  background: "none",
-  border: "none",
-  boxShadow: "none",
   fontWeight: 700,
   color: colorAction
 });
 
-const blockCss = css({
+const filterGroupCss = css({
   float: "left",
   display: "inline-block"
 });
 
-const Block = ({ data, blockIndex, toggleBlockOperand }) =>
-  data.fragments.map((fragment, i) => (
+const FilterGroup = ({ data, filterGroupIndex, toggleFilterGroupOperand }) =>
+  data.filters.map((filter, i) => (
     <React.Fragment>
-      <Fragment data={fragment} />
-      {i < data.fragments.length - 1 && (
+      <Filter data={filter} />
+      {i < data.filters.length - 1 && (
         <button
-          className={blockOperandCss}
-          data-block-index={blockIndex}
-          onClick={toggleBlockOperand}
+          className={classList(filterGroupOperandCss, buttonResetCss)}
+          data-filter-group-index={filterGroupIndex}
+          onClick={toggleFilterGroupOperand}
         >
           {data.operand}
         </button>
@@ -228,26 +318,36 @@ const Block = ({ data, blockIndex, toggleBlockOperand }) =>
     </React.Fragment>
   ));
 
+const serializeSegment = state => JSON.stringify(state);
+
 export default () => {
-  const [blocks, setBlocks] = useState(initialState);
+  const [filterGroups, setFilterGroups] = useState(initialState);
   const [operand, setOperand] = useState("and");
 
-  const addFragment = (blockIndex, type) => {
-    var newBlocks = blocks.slice(0);
-    newBlocks[blockIndex].fragments.push({
+  const addFilter = (filterGroupIndex, type) => {
+    var newFilterGroups = filterGroups.slice(0);
+    newFilterGroups[filterGroupIndex].filters.push({
       type: type,
-      method: Object.keys(schema.fragments[type].methods)[0],
+      method: Object.keys(schema.filterTypes[type].methods)[0],
       value: null
     });
-    setBlocks(newBlocks);
+    setFilterGroups(newFilterGroups);
   };
 
-  const addBlock = () => {
-    setBlocks([
-      ...blocks,
+  const addFilterGroup = () => {
+    setFilterGroups([
+      ...filterGroups,
       {
         operand: "and",
-        fragments: [{ type: "address", method: "is", value: "test address" }]
+        filters: [
+          {
+            type: schema.filterTypesIndex[0],
+            method: Object.keys(
+              schema.filterTypes[schema.filterTypesIndex[0]].methods
+            )[0],
+            value: null
+          }
+        ]
       }
     ]);
   };
@@ -255,32 +355,38 @@ export default () => {
   const toggleGlobalOperand = () =>
     setOperand(operand === "and" ? "or" : "and");
 
-  const toggleBlockOperand = e => {
-    const blockIndex = e.target.dataset.blockIndex;
-    var newBlocks = blocks.slice(0);
-    newBlocks[blockIndex].operand =
-      blocks[blockIndex].operand === "and" ? "or" : "and";
-    setBlocks(newBlocks);
+  const toggleFilterGroupOperand = e => {
+    const filterGroupIndex = e.target.dataset.filterGroupIndex;
+    var newFilterGroups = filterGroups.slice(0);
+    newFilterGroups[filterGroupIndex].operand =
+      filterGroups[filterGroupIndex].operand === "and" ? "or" : "and";
+    setFilterGroups(newFilterGroups);
   };
 
   return [
-    blocks.map((block, i) => (
-      <div className={blockCss}>
-        <Block
-          data={block}
-          blockIndex={i}
-          toggleBlockOperand={toggleBlockOperand}
+    filterGroups.map((filterGroup, i) => (
+      <div className={filterGroupCss}>
+        <FilterGroup
+          data={filterGroup}
+          filterGroupIndex={i}
+          toggleFilterGroupOperand={toggleFilterGroupOperand}
         />
-        {i < blocks.length - 1 && (
-          <button className={globalOperandCss} onClick={toggleGlobalOperand}>
+        {i < filterGroups.length - 1 && (
+          <button
+            className={classList(globalOperandCss, buttonResetCss)}
+            onClick={toggleGlobalOperand}
+          >
             {operand}
           </button>
         )}
-        <AddFragment addFragment={addFragment} i={i} />
+        <AddFilterButton addFilter={addFilter} i={i} />
       </div>
     )),
-    <button onClick={addBlock} className={addBlockCss}>
-      + Add Block
+    <button
+      onClick={addFilterGroup}
+      className={classList(addFilterGroupCss, buttonResetCss)}
+    >
+      + Add Filter
     </button>
   ];
 };
