@@ -219,7 +219,8 @@ const baselineCss = css({
 const flyoutCss = css({
   backgroundColor: "#fafafa",
   borderRadius,
-  boxShadow: "2px 2px 5px rgba(0,0,0,0.2)"
+  border: "1px solid #eee",
+  boxShadow: "0.1rem 0.1rem 0.5rem rgba(0,0,0,0.1)"
 });
 
 const flyoutOption = css({
@@ -343,27 +344,32 @@ const filterButtonCss = css({
   padding: mainPadding
 });
 
-const Filter = ({ data, clientClassList = [], deleteFilter }) => {
+const Filter = ({ data, clientClassList, deleteFilter }) => {
   const [editing, setEditing] = useState(false);
   const filterSchema = schema.filterTypes[data.type];
+  const classes = [
+    filterButtonCss,
+    buttonResetCss,
+    data.value === null ? filterMissingValueCss : null,
+    ...(clientClassList || [])
+  ];
   return (
     <div className={filterCss}>
       <button
-        className={classList(
-          filterButtonCss,
-          buttonResetCss,
-          data.value === null ? filterMissingValueCss : null,
-          ...clientClassList
-        )}
+        className={classList(...classes)}
         onClick={() => setEditing(true)}
       >
-        <FontAwesomeIcon icon={filterSchema.icon} /> {filterSchema.text}
+        <FontAwesomeIcon
+          icon={filterSchema.icon}
+          className={css({ paddingRight: mainPadding }).toString()}
+        />
+        {filterSchema.text}{" "}
         <span className={filterMethodCss}>
-          {" "}
           {filterSchema.methods[data.method].text}
         </span>{" "}
-        {data.value !== null ? data.value : "missing value"}{" "}
+        {data.value !== null ? data.value : <u>missing value</u>}
         <span
+          className={css({ paddingLeft: mainPadding })}
           onClick={e => {
             e.stopPropagation();
             deleteFilter();
