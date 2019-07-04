@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import { css } from "glamor";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHome } from "@fortawesome/free-solid-svg-icons";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { fas } from "@fortawesome/pro-solid-svg-icons";
+
+library.add(fas);
 
 /**
  *
@@ -18,34 +21,137 @@ const colorActionLight = "#ddf";
 
 const schema = {
   types: { text: {}, bool: {}, number: {}, options: {} },
-  filterTypesIndex: ["address", "firstName", "lastName"],
+  filterTypesIndex: [
+    "street",
+    "suburb",
+    "bedrooms",
+    "bathrooms",
+    "postcode",
+    "owner",
+    "tenant",
+    "tags",
+    "appraisal",
+    "listing",
+    "contract",
+    "user"
+  ],
   filterTypes: {
-    address: {
-      text: "Address",
+    streetNumber: {
+      text: "Street Number",
       methods: {
         is: { text: "is", type: "text" },
         isNot: { text: "is not", type: "text" },
         length: { text: "length", type: "number" }
       },
-      icon: faHome
+      icon: "mailbox"
     },
-    firstName: {
-      text: "First Name",
+    street: {
+      text: "Street",
       methods: {
         is: { text: "is", type: "text" },
         isNot: { text: "is not", type: "text" },
         length: { text: "length", type: "number" }
       },
-      icon: faHome
+      icon: "map-signs"
     },
-    lastName: {
-      text: "Last Name",
+    suburb: {
+      text: "Suburb",
       methods: {
         is: { text: "is", type: "text" },
         isNot: { text: "is not", type: "text" },
         length: { text: "length", type: "number" }
       },
-      icon: faHome
+      icon: "map-marked"
+    },
+    bedrooms: {
+      text: "Bedrooms",
+      methods: {
+        is: { text: "is", type: "text" },
+        isNot: { text: "is not", type: "text" },
+        length: { text: "length", type: "number" }
+      },
+      icon: "bed"
+    },
+    bathrooms: {
+      text: "Bathrooms",
+      methods: {
+        is: { text: "is", type: "text" },
+        isNot: { text: "is not", type: "text" },
+        length: { text: "length", type: "number" }
+      },
+      icon: "bath"
+    },
+    postcode: {
+      text: "Postcode",
+      methods: {
+        is: { text: "is", type: "text" },
+        isNot: { text: "is not", type: "text" },
+        length: { text: "length", type: "number" }
+      },
+      icon: "location"
+    },
+    owner: {
+      text: "Owner",
+      methods: {
+        is: { text: "is", type: "text" },
+        isNot: { text: "is not", type: "text" },
+        length: { text: "length", type: "number" }
+      },
+      icon: "user-tie"
+    },
+    tenant: {
+      text: "Tenant",
+      methods: {
+        is: { text: "is", type: "text" },
+        isNot: { text: "is not", type: "text" },
+        length: { text: "length", type: "number" }
+      },
+      icon: "user"
+    },
+    tags: {
+      text: "Tags",
+      methods: {
+        is: { text: "is", type: "text" },
+        isNot: { text: "is not", type: "text" },
+        length: { text: "length", type: "number" }
+      },
+      icon: "tags"
+    },
+    appraisal: {
+      text: "Appraisal",
+      methods: {
+        is: { text: "is", type: "text" },
+        isNot: { text: "is not", type: "text" },
+        length: { text: "length", type: "number" }
+      },
+      icon: "clipboard-list-check"
+    },
+    listing: {
+      text: "Listing",
+      methods: {
+        is: { text: "is", type: "text" },
+        isNot: { text: "is not", type: "text" },
+        length: { text: "length", type: "number" }
+      },
+      icon: "toggle-on"
+    },
+    contract: {
+      text: "Contract",
+      methods: {
+        is: { text: "is", type: "text" },
+        isNot: { text: "is not", type: "text" },
+        length: { text: "length", type: "number" }
+      },
+      icon: "file-signature"
+    },
+    user: {
+      text: "User",
+      methods: {
+        is: { text: "is", type: "text" },
+        isNot: { text: "is not", type: "text" },
+        length: { text: "length", type: "number" }
+      },
+      icon: "user"
     }
   }
 };
@@ -55,34 +161,9 @@ const initialState = [
     operand: "or",
     filters: [
       {
-        type: "address",
+        type: "street",
         method: "is",
-        value: "ajhadw"
-      },
-      {
-        type: "address",
-        method: "isNot",
-        value: "wakka wakka"
-      }
-    ]
-  },
-  {
-    operand: "and",
-    filters: [
-      {
-        type: "address",
-        method: "is",
-        value: "hello der"
-      }
-    ]
-  },
-  {
-    operand: "or",
-    filters: [
-      {
-        type: "address",
-        method: "length",
-        value: 3
+        value: "test address"
       }
     ]
   }
@@ -101,8 +182,7 @@ function classList() {
       className => className !== null && typeof className !== typeof undefined
     )
     .map(css => css.toString());
-  var result = classes.join(" ");
-  return result;
+  return classes.join(" ");
 }
 
 const buttonResetCss = css({
@@ -123,14 +203,6 @@ const filterMethodCss = css({
   fontWeight: "400"
 });
 
-const addFilterButtonCss = css({
-  float: "left",
-  padding: mainPadding,
-  backgroundColor: "#fafafa",
-  display: "inline-block",
-  marginLeft: "0.1rem"
-});
-
 const filterMissingValueCss = css({
   backgroundColor: colorDangerLight,
   color: colorDanger
@@ -138,63 +210,80 @@ const filterMissingValueCss = css({
 
 const baselineCss = css({
   position: "absolute",
+  height: 0,
   bottom: 0,
   left: 0,
   right: 0
 });
 
-const addFilterCss = css({
-  position: "absolute",
+const flyoutCss = css({
+  backgroundColor: "#fafafa",
+  borderRadius,
+  boxShadow: "2px 2px 5px rgba(0,0,0,0.2)"
+});
+
+const flyoutOption = css({
+  display: "block",
+  width: "100%",
+  boxSizing: "border-box",
+  textAlign: "left",
+  padding: "0.5rem",
+  ":hover": {
+    backgroundColor: "#eee"
+  }
+});
+
+const addFilterFlyoutCss = css({
+  position: "relative",
+  float: "left",
   width: 200,
-  backgroundColor: "#fff",
-  border: "1px solid #333",
   top: "0.5rem",
   left: 0
 });
 
-const AddFilterOptionCss = css({
-  display: "block",
-  width: "100%",
-  textAlign: "left",
-  padding: "0.5rem",
-  ":hover": {
-    backgroundColor: "#fafafa"
-  }
-});
-
-const AddFilter = ({ addFilter, i, done }) => (
-  <div className={addFilterCss}>
+const AddFilterFlyout = ({ addFilter, i, done }) => (
+  <div className={classList(flyoutCss, addFilterFlyoutCss)}>
     {schema.filterTypesIndex.map(type => (
       <button
-        className={classList(buttonResetCss, AddFilterOptionCss)}
+        className={classList(buttonResetCss, flyoutOption)}
         onClick={() => addFilter(i, type)}
       >
         <FontAwesomeIcon icon={schema.filterTypes[type].icon} />{" "}
         {schema.filterTypes[type].text}
       </button>
     ))}
-    <button
-      className={classList(buttonResetCss, AddFilterOptionCss)}
-      onClick={done}
-    >
+    <button className={classList(buttonResetCss, flyoutOption)} onClick={done}>
       Done
     </button>
   </div>
 );
 
+const addFilterButtonCss = css({
+  position: "relative",
+  float: "left"
+});
+
+const addFilterButtonButtonCss = css({
+  float: "left",
+  padding: mainPadding,
+  backgroundColor: "#fafafa",
+  display: "inline-block",
+  marginLeft: "0.1rem"
+});
+
 const AddFilterButton = ({ addFilter, i }) => {
   const [open, setOpen] = useState(false);
   return (
-    <div className={buttonResetCss}>
+    <div className={addFilterButtonCss}>
       <button
         onClick={() => setOpen(true)}
-        className={classList(buttonResetCss, addFilterButtonCss)}
+        className={classList(buttonResetCss, addFilterButtonButtonCss)}
       >
         +
       </button>
       <div className={baselineCss}>
         {open && (
-          <AddFilter
+          <AddFilterFlyout
             addFilter={(i, type) => {
               setOpen(false);
               addFilter(i, type);
@@ -208,26 +297,40 @@ const AddFilterButton = ({ addFilter, i }) => {
   );
 };
 
-const editFilterCss = css({
+const editFilterFlyoutCss = css({
   textAlign: "left",
   width: 200,
   position: "absolute",
-  top: 0,
+  top: "0.5rem",
   left: 0
 });
 
-const EditFilter = ({ data }) => <div className={editFilterCss}>Hi</div>;
+const EditFilterFlyout = ({ data, done }) => {
+  return (
+    <div className={classList(flyoutCss, editFilterFlyoutCss)}>
+      {Object.keys(schema.filterTypes[data.type].methods).map(method => (
+        <div className={flyoutOption}>
+          <input type="radio" />{" "}
+          {schema.filterTypes[data.type].methods[method].text}
+        </div>
+      ))}
+      <button
+        className={classList(buttonResetCss, flyoutOption)}
+        onClick={done}
+      >
+        Done
+      </button>
+    </div>
+  );
+};
 
 const filterCss = css({
-  float: "left"
-});
-
-const filterButtonCss = css({
   position: "relative",
-  padding: mainPadding,
-  fontWeight: 600,
+  float: "left",
   backgroundColor: "#eee",
   display: "inline-block",
+  color: "#333",
+  boxShadow: "none",
   border: "none",
   ":hover": {
     backgroundColor: colorActionLight,
@@ -235,7 +338,12 @@ const filterButtonCss = css({
   }
 });
 
-const Filter = ({ data }) => {
+const filterButtonCss = css({
+  float: "left",
+  padding: mainPadding
+});
+
+const Filter = ({ data, clientClassList = [], deleteFilter }) => {
   const [editing, setEditing] = useState(false);
   const filterSchema = schema.filterTypes[data.type];
   return (
@@ -244,7 +352,8 @@ const Filter = ({ data }) => {
         className={classList(
           filterButtonCss,
           buttonResetCss,
-          data.value === null ? filterMissingValueCss : null
+          data.value === null ? filterMissingValueCss : null,
+          ...clientClassList
         )}
         onClick={() => setEditing(true)}
       >
@@ -253,10 +362,24 @@ const Filter = ({ data }) => {
           {" "}
           {filterSchema.methods[data.method].text}
         </span>{" "}
-        {data.value !== null ? data.value : "missing value"}
+        {data.value !== null ? data.value : "missing value"}{" "}
+        <span
+          onClick={e => {
+            e.stopPropagation();
+            deleteFilter();
+          }}
+        >
+          <FontAwesomeIcon icon="times" />
+        </span>
         {editing && (
           <div className={baselineCss}>
-            <EditFilter />
+            <EditFilterFlyout
+              data={data}
+              done={() => {
+                console.log("wraar", setEditing);
+                setEditing(false);
+              }}
+            />
           </div>
         )}
       </button>
@@ -302,10 +425,19 @@ const filterGroupCss = css({
   display: "inline-block"
 });
 
-const FilterGroup = ({ data, filterGroupIndex, toggleFilterGroupOperand }) =>
+const FilterGroup = ({
+  data,
+  filterGroupIndex,
+  toggleFilterGroupOperand,
+  deleteFilter
+}) =>
   data.filters.map((filter, i) => (
     <React.Fragment>
-      <Filter data={filter} />
+      <Filter
+        deleteFilter={() => deleteFilter(i)}
+        data={filter}
+        clientClassList={i === 0 ? [roundedLeft] : null}
+      />
       {i < data.filters.length - 1 && (
         <button
           className={classList(filterGroupOperandCss, buttonResetCss)}
@@ -318,11 +450,12 @@ const FilterGroup = ({ data, filterGroupIndex, toggleFilterGroupOperand }) =>
     </React.Fragment>
   ));
 
-const serializeSegment = state => JSON.stringify(state);
+const saveSegment = state => console.log(JSON.stringify(state));
 
 export default () => {
   const [filterGroups, setFilterGroups] = useState(initialState);
   const [operand, setOperand] = useState("and");
+  const [addingFilterGroup, setAddingFilterGroup] = useState(false);
 
   const addFilter = (filterGroupIndex, type) => {
     var newFilterGroups = filterGroups.slice(0);
@@ -332,6 +465,23 @@ export default () => {
       value: null
     });
     setFilterGroups(newFilterGroups);
+  };
+
+  const deleteFilter = (filterGroupIndex, filterIndex) => {
+    setFilterGroups([
+      ...filterGroups.slice(0, filterGroupIndex),
+      ...(filterGroups[filterGroupIndex].filters.length === 1
+        ? []
+        : [
+            {
+              ...filterGroups[filterGroupIndex],
+              filters: filterGroups[filterGroupIndex].filters.filter(
+                (filter, i) => i !== filterIndex
+              )
+            }
+          ]),
+      ...filterGroups.slice(filterGroupIndex + 1)
+    ]);
   };
 
   const addFilterGroup = () => {
@@ -370,6 +520,7 @@ export default () => {
           data={filterGroup}
           filterGroupIndex={i}
           toggleFilterGroupOperand={toggleFilterGroupOperand}
+          deleteFilter={filterIndex => deleteFilter(i, filterIndex)}
         />
         {i < filterGroups.length - 1 && (
           <button
@@ -383,10 +534,27 @@ export default () => {
       </div>
     )),
     <button
-      onClick={addFilterGroup}
+      onClick={() => setAddingFilterGroup(true)}
       className={classList(addFilterGroupCss, buttonResetCss)}
     >
       + Add Filter
+      {addingFilterGroup && (
+        <div className={baselineCss}>
+          <AddFilterFlyout
+            addFilter={(_i, type) => {
+              setAddingFilterGroup(false);
+              addFilterGroup(type);
+            }}
+            done={() => setAddingFilterGroup(false)}
+          />
+        </div>
+      )}
+    </button>,
+    <button
+      onClick={() => saveSegment({ filterGroups, operand })}
+      className={classList(addFilterGroupCss, buttonResetCss)}
+    >
+      <FontAwesomeIcon icon="chart-pie" /> Save Segment
     </button>
   ];
 };
