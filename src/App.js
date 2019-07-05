@@ -3,7 +3,6 @@ import { css } from "glamor";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { fas } from "@fortawesome/pro-solid-svg-icons";
-import FieldRadioGroup from "@atlaskit/field-radio-group";
 
 library.add(fas);
 
@@ -14,7 +13,27 @@ const colorDangerLight = "#fdd";
 const colorAction = "#55f";
 const colorActionLight = "#ddf";
 
-const TextInput = ({}) => <input />;
+const textInputCss = css({
+  width: "100%",
+  boxSizing: "border-box"
+});
+
+const TextInput = ({ value, setValue }) => (
+  <input
+    value={value === null ? "" : value}
+    onChange={e => setValue(e.target.value)}
+    className={textInputCss}
+  />
+);
+
+const NumberInput = ({ value, setValue }) => (
+  <input
+    type="number"
+    value={value === null ? "" : value}
+    onChange={e => setValue(e.target.value)}
+    className={textInputCss}
+  />
+);
 
 const schema = {
   types: {
@@ -25,7 +44,7 @@ const schema = {
       input: TextInput
     },
     number: {
-      input: TextInput
+      input: NumberInput
     },
     options: {
       input: TextInput
@@ -204,15 +223,6 @@ const roundedRight = css({
   borderRadius: `0 ${borderRadius} ${borderRadius} 0`
 });
 
-const filterMethodCss = css({
-  fontWeight: "400"
-});
-
-const filterMissingValueCss = css({
-  backgroundColor: colorDangerLight,
-  color: colorDanger
-});
-
 const baselineCss = css({
   position: "absolute",
   height: 0,
@@ -290,25 +300,29 @@ const addFilterButtonButtonCss = css({
   display: "inline-block"
 });
 
-const AddFilterButton = ({ addFilter, i }) => {
-  const [open, setOpen] = useState(false);
+const AddFilterButton = ({
+  addFilter,
+  i,
+  addingFilterFlyoutOpen,
+  setAddingFilterFlyoutOpen
+}) => {
   return (
-    <div className={addFilterButtonCss}>
+    <div className={classList(addFilterButtonCss, roundedRight)}>
       <button
-        onClick={() => setOpen(true)}
+        onClick={() => setAddingFilterFlyoutOpen(true)}
         className={classList(buttonResetCss, addFilterButtonButtonCss)}
       >
         +
       </button>
       <div className={baselineCss}>
-        {open && (
+        {addingFilterFlyoutOpen && (
           <AddFilterFlyout
             addFilter={(i, type) => {
-              setOpen(false);
+              setAddingFilterFlyoutOpen(false);
               addFilter(i, type);
             }}
             i={i}
-            done={() => setOpen(false)}
+            done={() => setAddingFilterFlyoutOpen(false)}
           />
         )}
       </div>
@@ -324,14 +338,18 @@ const editFilterFlyoutCss = css({
   left: 0
 });
 
-const EditFilterFlyout = ({ data, done, setMethod, setValue }) => {
+const editFilterFlyoutInputAreaCss = css({
+  padding: `0 ${mainPadding} ${mainPadding} ${mainPadding}`
+});
+
+const EditFilterFlyout = ({ data, done, setValue, setMethod }) => {
   const Input =
     schema.types[schema.filterTypes[data.type].methods[data.method].type].input;
   return (
     <div className={classList(flyoutCss, editFilterFlyoutCss)}>
       {Object.keys(schema.filterTypes[data.type].methods).map(method => (
-        <React.Fragment>
-          <div key={method} className={flyoutOption}>
+        <React.Fragment key={method}>
+          <div className={flyoutOption}>
             <input
               name="FiUt3gXEG2zBnuwA39NL"
               type="radio"
@@ -344,7 +362,7 @@ const EditFilterFlyout = ({ data, done, setMethod, setValue }) => {
             {schema.filterTypes[data.type].methods[method].text}
           </div>
           {data.method === method && (
-            <div>
+            <div className={editFilterFlyoutInputAreaCss}>
               <Input value={data.value} setValue={setValue} />
               {schema.filterTypes[data.type].methods[method].tail}
             </div>
@@ -378,14 +396,24 @@ const filterButtonCss = css({
   padding: mainPadding
 });
 
+const filterMethodCss = css({
+  fontWeight: "400"
+});
+
+const filterMissingValueCss = css({
+  backgroundColor: colorDangerLight,
+  color: colorDanger
+});
+
 const Filter = ({
   data,
   clientClassList,
   deleteFilter,
   setMethod,
-  setValue
+  setValue,
+  editingFilterFlyoutOpen,
+  setEditingFilterFlyoutOpen
 }) => {
-  const [editing, setEditing] = useState(false);
   const filterSchema = schema.filterTypes[data.type];
   const classes = [
     filterButtonCss,
@@ -397,7 +425,11 @@ const Filter = ({
     <div className={filterCss}>
       <button
         className={classList(...classes)}
-        onClick={setEditing ? () => setEditing(true) : null}
+        onClick={
+          !editingFilterFlyoutOpen
+            ? () => setEditingFilterFlyoutOpen(true)
+            : null
+        }
       >
         <FontAwesomeIcon
           icon={filterSchema.icon}
@@ -407,10 +439,10 @@ const Filter = ({
         <span className={filterMethodCss}>
           {filterSchema.methods[data.method].text}
         </span>{" "}
-        {data.value !== null ? data.value : <i>...</i>}
+        {data.value !== null ? data.value : <i>...</i>}{" "}
+        {filterSchema.methods[data.method].tail}
         <span
           className={css({ paddingLeft: mainPadding })}
-          setValue
           onClick={e => {
             e.stopPropagation();
             deleteFilter();
@@ -418,7 +450,7 @@ const Filter = ({
         >
           <FontAwesomeIcon icon="times" />
         </span>
-        {editing && (
+        {editingFilterFlyoutOpen && (
           <div className={baselineCss}>
             <EditFilterFlyout
               setMethod={setMethod}
@@ -426,7 +458,7 @@ const Filter = ({
               data={data}
               done={e => {
                 e.stopPropagation();
-                setEditing(false);
+                setEditingFilterFlyoutOpen(false);
               }}
             />
           </div>
@@ -483,14 +515,22 @@ const FilterGroup = ({
   toggleFilterGroupOperand,
   deleteFilter,
   setFilterMethod,
-  setFilterValue
+  setFilterValue,
+  editingFilterFlyoutOpen,
+  setEditingFilterFlyoutOpen
 }) =>
   data.filters.map((filter, i) => (
     <React.Fragment key={i}>
       <Filter
         deleteFilter={() => deleteFilter(i)}
+        setValue={value => setFilterValue(i, value)}
+        setMethod={method => setFilterMethod(i, method)}
         data={filter}
         clientClassList={i === 0 ? [roundedLeft] : null}
+        editingFilterFlyoutOpen={editingFilterFlyoutOpen === i}
+        setEditingFilterFlyoutOpen={state =>
+          setEditingFilterFlyoutOpen(i, state)
+        }
       />
       {i < data.filters.length - 1 && (
         <button
@@ -504,12 +544,43 @@ const FilterGroup = ({
     </React.Fragment>
   ));
 
-const saveSegment = state => console.log(JSON.stringify(state));
+const AddFilter = ({
+  setAddingFilterGroup,
+  addingFilterGroup,
+  addFilterGroup
+}) => (
+  <button
+    onClick={() => setAddingFilterGroup(true)}
+    className={classList(actionsCss, buttonResetCss)}
+  >
+    + Add Filter
+    {addingFilterGroup && (
+      <div className={baselineCss}>
+        <AddFilterFlyout
+          addFilter={(_i, type) => {
+            setAddingFilterGroup(false);
+            addFilterGroup(type);
+          }}
+          done={() => setAddingFilterGroup(false)}
+        />
+      </div>
+    )}
+  </button>
+);
+
+const SaveSegment = ({ state }) => (
+  <button
+    onClick={() => console.log(JSON.stringify(state))}
+    className={classList(actionsCss, buttonResetCss)}
+  >
+    <FontAwesomeIcon icon="chart-pie-alt" /> Save Segment
+  </button>
+);
 
 export default () => {
   const [filterGroups, setFilterGroups] = useState(initialState);
   const [operand, setOperand] = useState("and");
-  const [addingFilterGroup, setAddingFilterGroup] = useState(false);
+  const [flyout, setFlyout] = useState({ type: "none" });
 
   const addFilter = (filterGroupIndex, type) => {
     var newFilterGroups = filterGroups.slice(0);
@@ -522,20 +593,22 @@ export default () => {
   };
 
   const deleteFilter = (filterGroupIndex, filterIndex) => {
-    setFilterGroups([
-      ...filterGroups.slice(0, filterGroupIndex),
-      ...(filterGroups[filterGroupIndex].filters.length === 1
-        ? []
-        : [
-            {
-              ...filterGroups[filterGroupIndex],
-              filters: filterGroups[filterGroupIndex].filters.filter(
-                (filter, i) => i !== filterIndex
-              )
-            }
-          ]),
-      ...filterGroups.slice(filterGroupIndex + 1)
-    ]);
+    if (filterGroups[filterGroupIndex].filters.length === 1)
+      setFilterGroup(filterGroupIndex, null);
+    else setFilter(filterGroupIndex, filterIndex, null);
+  };
+
+  const setFilterGroup = (filterGroupIndex, filterGroup) => {
+    if (filterGroup === null)
+      setFilterGroups(
+        filterGroups.filter((_filterGroup, i) => i !== filterGroupIndex)
+      );
+    else
+      setFilterGroups([
+        ...filterGroups.slice(0, filterGroupIndex),
+        filterGroup,
+        ...filterGroups.slice(filterGroupIndex + 1)
+      ]);
   };
 
   const addFilterGroup = type => {
@@ -556,6 +629,31 @@ export default () => {
     ]);
   };
 
+  const setFilter = (filterGroupIndex, filterIndex, filter) => {
+    var filters = filterGroups[filterGroupIndex].filters.slice(0, filterIndex);
+    if (filter !== null) filters.push(filter);
+    filters = filters.concat(
+      filterGroups[filterGroupIndex].filters.slice(filterIndex + 1)
+    );
+    setFilterGroup(filterGroupIndex, {
+      ...filterGroups[filterGroupIndex],
+      filters
+    });
+  };
+
+  const setFilterValue = (filterGroupIndex, filterIndex, value) =>
+    setFilter(filterGroupIndex, filterIndex, {
+      ...filterGroups[filterGroupIndex].filters[filterIndex],
+      value
+    });
+
+  const setFilterMethod = (filterGroupIndex, filterIndex, method) =>
+    setFilter(filterGroupIndex, filterIndex, {
+      ...filterGroups[filterGroupIndex].filters[filterIndex],
+      value: null,
+      method
+    });
+
   const toggleGlobalOperand = () =>
     setOperand(operand === "and" ? "or" : "and");
 
@@ -574,7 +672,21 @@ export default () => {
           data={filterGroup}
           filterGroupIndex={i}
           toggleFilterGroupOperand={toggleFilterGroupOperand}
+          setFilterValue={(j, value) => setFilterValue(i, j, value)}
+          setFilterMethod={(j, value) => setFilterMethod(i, j, value)}
           deleteFilter={filterIndex => deleteFilter(i, filterIndex)}
+          editingFilterFlyoutOpen={
+            flyout.type === "editingFilter" && flyout.filterGroupIndex === i
+              ? flyout.filterIndex
+              : null
+          }
+          setEditingFilterFlyoutOpen={(j, state) =>
+            setFlyout(
+              state
+                ? { type: "editingFilter", filterGroupIndex: i, filterIndex: j }
+                : { type: "none" }
+            )
+          }
         />
         {i < filterGroups.length - 1 && (
           <button
@@ -584,31 +696,29 @@ export default () => {
             {operand}
           </button>
         )}
-        <AddFilterButton addFilter={addFilter} i={i} />
+        <AddFilterButton
+          addingFilterFlyoutOpen={
+            flyout.type === "addingFilter" && flyout.filterGroupIndex === i
+          }
+          setAddingFilterFlyoutOpen={state =>
+            setFlyout(
+              state
+                ? { type: "addingFilter", filterGroupIndex: i }
+                : { type: "none" }
+            )
+          }
+          addFilter={addFilter}
+          i={i}
+        />
       </div>
     )),
-    <button
-      onClick={() => setAddingFilterGroup(true)}
-      className={classList(actionsCss, buttonResetCss)}
-    >
-      + Add Filter
-      {addingFilterGroup && (
-        <div className={baselineCss}>
-          <AddFilterFlyout
-            addFilter={(_i, type) => {
-              setAddingFilterGroup(false);
-              addFilterGroup(type);
-            }}
-            done={() => setAddingFilterGroup(false)}
-          />
-        </div>
-      )}
-    </button>,
-    <button
-      onClick={() => saveSegment({ filterGroups, operand })}
-      className={classList(actionsCss, buttonResetCss)}
-    >
-      <FontAwesomeIcon icon="chart-pie" /> Save Segment
-    </button>
+    <AddFilter
+      setAddingFilterGroup={state =>
+        setFlyout(state ? { type: "addingFilterGroup" } : { type: "none" })
+      }
+      addingFilterGroup={flyout.type === "addingFilterGroup"}
+      addFilterGroup={addFilterGroup}
+    />,
+    <SaveSegment state={{ filterGroups, operand }} />
   ];
 };
