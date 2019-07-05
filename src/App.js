@@ -3,6 +3,7 @@ import { css } from "glamor";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { fas } from "@fortawesome/pro-solid-svg-icons";
+import _elementClosest from "element-closest";
 
 /**
  *
@@ -135,7 +136,7 @@ const schema = {
       text: "Owner",
       methods: {
         is: { text: "is", type: "text", tail: "" },
-        isNot: { text: "is", type: "text", tail: "years old" },
+        isYearsOld: { text: "is", type: "text", tail: "years old" },
         length: { text: "length", type: "number", tail: "" }
       },
       icon: "user-tie"
@@ -225,17 +226,6 @@ function classList() {
     .map(css => css.toString());
   return classes.join(" ");
 }
-
-const isDescendant = (parent, child) => {
-  var node = child.parentNode;
-  while (node != null) {
-    if (node === parent) {
-      return true;
-    }
-    node = node.parentNode;
-  }
-  return false;
-};
 
 /**
  *
@@ -616,14 +606,15 @@ export default () => {
   const [filterGroups, setFilterGroups] = useState(initialState);
   const [operand, setOperand] = useState("and");
   const [flyout, setFlyout] = useState(false);
+  const [initDone, setInitDone] = useState(false);
 
-  const root = useRef(null);
-
-  window.addEventListener("click", e => {
-    console.log(e.target.dataset);
-    //eslint-disable-next-line
-    if (!isDescendant(root.current, e.target)) setFlyout({ type: "none" });
-  });
+  if (!initDone) {
+    window.addEventListener("click", e => {
+      //eslint-disable-next-line
+      if (!e.target.closest("#ROOOT")) setFlyout({ type: "none" });
+    });
+    setInitDone(true);
+  }
 
   const addFilter = (filterGroupIndex, type) => {
     var newFilterGroups = filterGroups.slice(0);
@@ -709,7 +700,7 @@ export default () => {
   };
 
   return (
-    <div ref={root}>
+    <div id="ROOOT">
       {filterGroups.map((filterGroup, i) => (
         <div key={i} className={filterGroupCss}>
           <FilterGroup
