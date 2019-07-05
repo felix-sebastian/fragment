@@ -1,10 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { css } from "glamor";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { fas } from "@fortawesome/pro-solid-svg-icons";
 
+/**
+ *
+ * setup
+ *
+ */
+
 library.add(fas);
+
+/**
+ *
+ * config
+ *
+ */
 
 const mainPadding = "0.7rem";
 const borderRadius = "0.2rem";
@@ -198,6 +210,12 @@ const initialState = [
   }
 ];
 
+/**
+ *
+ * functions
+ *
+ */
+
 function classList() {
   var classes = Array.prototype.slice
     .call(arguments)
@@ -207,6 +225,23 @@ function classList() {
     .map(css => css.toString());
   return classes.join(" ");
 }
+
+const isDescendant = (parent, child) => {
+  var node = child.parentNode;
+  while (node != null) {
+    if (node === parent) {
+      return true;
+    }
+    node = node.parentNode;
+  }
+  return false;
+};
+
+/**
+ *
+ * components
+ *
+ */
 
 const buttonResetCss = css({
   backgroundColor: "transparent",
@@ -580,7 +615,15 @@ const SaveSegment = ({ state }) => (
 export default () => {
   const [filterGroups, setFilterGroups] = useState(initialState);
   const [operand, setOperand] = useState("and");
-  const [flyout, setFlyout] = useState({ type: "none" });
+  const [flyout, setFlyout] = useState(false);
+
+  const root = useRef(null);
+
+  window.addEventListener("click", e => {
+    console.log(e.target.dataset);
+    //eslint-disable-next-line
+    if (!isDescendant(root.current, e.target)) setFlyout({ type: "none" });
+  });
 
   const addFilter = (filterGroupIndex, type) => {
     var newFilterGroups = filterGroups.slice(0);
@@ -665,60 +708,66 @@ export default () => {
     setFilterGroups(newFilterGroups);
   };
 
-  return [
-    filterGroups.map((filterGroup, i) => (
-      <div key={i} className={filterGroupCss}>
-        <FilterGroup
-          data={filterGroup}
-          filterGroupIndex={i}
-          toggleFilterGroupOperand={toggleFilterGroupOperand}
-          setFilterValue={(j, value) => setFilterValue(i, j, value)}
-          setFilterMethod={(j, value) => setFilterMethod(i, j, value)}
-          deleteFilter={filterIndex => deleteFilter(i, filterIndex)}
-          editingFilterFlyoutOpen={
-            flyout.type === "editingFilter" && flyout.filterGroupIndex === i
-              ? flyout.filterIndex
-              : null
-          }
-          setEditingFilterFlyoutOpen={(j, state) =>
-            setFlyout(
-              state
-                ? { type: "editingFilter", filterGroupIndex: i, filterIndex: j }
-                : { type: "none" }
-            )
-          }
-        />
-        {i < filterGroups.length - 1 && (
-          <button
-            className={classList(globalOperandCss, buttonResetCss)}
-            onClick={toggleGlobalOperand}
-          >
-            {operand}
-          </button>
-        )}
-        <AddFilterButton
-          addingFilterFlyoutOpen={
-            flyout.type === "addingFilter" && flyout.filterGroupIndex === i
-          }
-          setAddingFilterFlyoutOpen={state =>
-            setFlyout(
-              state
-                ? { type: "addingFilter", filterGroupIndex: i }
-                : { type: "none" }
-            )
-          }
-          addFilter={addFilter}
-          i={i}
-        />
-      </div>
-    )),
-    <AddFilter
-      setAddingFilterGroup={state =>
-        setFlyout(state ? { type: "addingFilterGroup" } : { type: "none" })
-      }
-      addingFilterGroup={flyout.type === "addingFilterGroup"}
-      addFilterGroup={addFilterGroup}
-    />,
-    <SaveSegment state={{ filterGroups, operand }} />
-  ];
+  return (
+    <div ref={root}>
+      {filterGroups.map((filterGroup, i) => (
+        <div key={i} className={filterGroupCss}>
+          <FilterGroup
+            data={filterGroup}
+            filterGroupIndex={i}
+            toggleFilterGroupOperand={toggleFilterGroupOperand}
+            setFilterValue={(j, value) => setFilterValue(i, j, value)}
+            setFilterMethod={(j, value) => setFilterMethod(i, j, value)}
+            deleteFilter={filterIndex => deleteFilter(i, filterIndex)}
+            editingFilterFlyoutOpen={
+              flyout.type === "editingFilter" && flyout.filterGroupIndex === i
+                ? flyout.filterIndex
+                : null
+            }
+            setEditingFilterFlyoutOpen={(j, state) =>
+              setFlyout(
+                state
+                  ? {
+                      type: "editingFilter",
+                      filterGroupIndex: i,
+                      filterIndex: j
+                    }
+                  : { type: "none" }
+              )
+            }
+          />
+          {i < filterGroups.length - 1 && (
+            <button
+              className={classList(globalOperandCss, buttonResetCss)}
+              onClick={toggleGlobalOperand}
+            >
+              {operand}
+            </button>
+          )}
+          <AddFilterButton
+            addingFilterFlyoutOpen={
+              flyout.type === "addingFilter" && flyout.filterGroupIndex === i
+            }
+            setAddingFilterFlyoutOpen={state =>
+              setFlyout(
+                state
+                  ? { type: "addingFilter", filterGroupIndex: i }
+                  : { type: "none" }
+              )
+            }
+            addFilter={addFilter}
+            i={i}
+          />
+        </div>
+      ))}
+      <AddFilter
+        setAddingFilterGroup={state =>
+          setFlyout(state ? { type: "addingFilterGroup" } : { type: "none" })
+        }
+        addingFilterGroup={flyout.type === "addingFilterGroup"}
+        addFilterGroup={addFilterGroup}
+      />
+      <SaveSegment state={{ filterGroups, operand }} />
+    </div>
+  );
 };
