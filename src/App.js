@@ -83,7 +83,7 @@ const schema = {
       methods: {
         is: { text: "is", type: "text", tail: "" },
         isNot: { text: "is not", type: "text", tail: "" },
-        length: { text: "length", type: "number", tail: "" }
+        lengthIs: { text: "length is", type: "number", tail: "characters long" }
       },
       icon: "mailbox"
     },
@@ -92,7 +92,7 @@ const schema = {
       methods: {
         is: { text: "is", type: "text", tail: "" },
         isNot: { text: "is not", type: "text", tail: "" },
-        length: { text: "length", type: "number", tail: "" }
+        lengthIs: { text: "length is", type: "number", tail: "characters long" }
       },
       icon: "map-signs"
     },
@@ -101,7 +101,7 @@ const schema = {
       methods: {
         is: { text: "is", type: "text", tail: "" },
         isNot: { text: "is not", type: "text", tail: "" },
-        length: { text: "length", type: "number", tail: "" }
+        lengthIs: { text: "length is", type: "number", tail: "characters long" }
       },
       icon: "map-marked"
     },
@@ -110,7 +110,7 @@ const schema = {
       methods: {
         is: { text: "is", type: "text", tail: "" },
         isNot: { text: "is not", type: "text", tail: "" },
-        length: { text: "length", type: "number", tail: "" }
+        lengthIs: { text: "length is", type: "number", tail: "characters long" }
       },
       icon: "bed"
     },
@@ -119,7 +119,7 @@ const schema = {
       methods: {
         is: { text: "is", type: "text", tail: "" },
         isNot: { text: "is not", type: "text", tail: "" },
-        length: { text: "length", type: "number", tail: "" }
+        lengthIs: { text: "length is", type: "number", tail: "characters long" }
       },
       icon: "bath"
     },
@@ -128,7 +128,7 @@ const schema = {
       methods: {
         is: { text: "is", type: "text", tail: "" },
         isNot: { text: "is not", type: "text", tail: "" },
-        length: { text: "length", type: "number", tail: "" }
+        lengthIs: { text: "length is", type: "number", tail: "characters long" }
       },
       icon: "location"
     },
@@ -137,7 +137,7 @@ const schema = {
       methods: {
         is: { text: "is", type: "text", tail: "" },
         isYearsOld: { text: "is", type: "text", tail: "years old" },
-        length: { text: "length", type: "number", tail: "" }
+        lengthIs: { text: "length is", type: "number", tail: "characters long" }
       },
       icon: "user-tie"
     },
@@ -146,7 +146,7 @@ const schema = {
       methods: {
         is: { text: "is", type: "text", tail: "" },
         isNot: { text: "is not", type: "text", tail: "" },
-        length: { text: "length", type: "number", tail: "" }
+        lengthIs: { text: "length is", type: "number", tail: "characters long" }
       },
       icon: "user"
     },
@@ -155,7 +155,7 @@ const schema = {
       methods: {
         is: { text: "is", type: "text", tail: "" },
         isNot: { text: "is not", type: "text", tail: "" },
-        length: { text: "length", type: "number", tail: "" }
+        lengthIs: { text: "length is", type: "number", tail: "characters long" }
       },
       icon: "tags"
     },
@@ -164,7 +164,7 @@ const schema = {
       methods: {
         is: { text: "is", type: "text", tail: "" },
         isNot: { text: "is not", type: "text", tail: "" },
-        length: { text: "length", type: "number", tail: "" }
+        lengthIs: { text: "length is", type: "number", tail: "characters long" }
       },
       icon: "clipboard-list-check"
     },
@@ -173,7 +173,7 @@ const schema = {
       methods: {
         is: { text: "is", type: "text", tail: "" },
         isNot: { text: "is not", type: "text", tail: "" },
-        length: { text: "length", type: "number", tail: "" }
+        lengthIs: { text: "length is", type: "number", tail: "characters long" }
       },
       icon: "toggle-on"
     },
@@ -182,7 +182,7 @@ const schema = {
       methods: {
         is: { text: "is", type: "text", tail: "" },
         isNot: { text: "is not", type: "text", tail: "" },
-        length: { text: "length", type: "number", tail: "" }
+        lengthIs: { text: "length is", type: "number", tail: "characters long" }
       },
       icon: "file-signature"
     },
@@ -191,7 +191,7 @@ const schema = {
       methods: {
         is: { text: "is", type: "text", tail: "" },
         isNot: { text: "is not", type: "text", tail: "" },
-        length: { text: "length", type: "number", tail: "" }
+        lengthIs: { text: "length is", type: "number", tail: "characters long" }
       },
       icon: "user"
     }
