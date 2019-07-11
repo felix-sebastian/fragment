@@ -3,6 +3,7 @@ import { css } from "glamor";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { fas } from "@fortawesome/pro-solid-svg-icons";
+// eslint-disable-next-line
 import _elementClosest from "element-closest";
 import polyfill from "./element-closest-ie-polyfill";
 
