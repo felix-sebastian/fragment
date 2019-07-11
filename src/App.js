@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { css } from "glamor";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
@@ -46,6 +46,7 @@ const TextInput = ({ value, setValue }) => (
 const NumberInput = ({ value, setValue }) => (
   <input
     type="number"
+    min="0"
     value={value === null ? "" : value}
     onChange={e => setValue(e.target.value)}
     className={textInputCss}
@@ -69,6 +70,7 @@ const schema = {
   },
   filterTypesIndex: [
     "street",
+    "streetNumber",
     "suburb",
     "bedrooms",
     "bathrooms",
@@ -85,9 +87,12 @@ const schema = {
     streetNumber: {
       text: "Street Number",
       methods: {
-        is: { text: "is", type: "text", tail: "" },
-        isNot: { text: "is not", type: "text", tail: "" },
-        lengthIs: { text: "length is", type: "number", tail: "characters long" }
+        isEqualTo: { text: "is equal to", type: "number", tail: "" },
+        isNotEqualTo: { text: "is not equal to", type: "number", tail: "" },
+        isLessThan: { text: "is less than", type: "number", tail: "" },
+        isGreaterThan: { text: "is greater than", type: "number", tail: "" },
+        isOdd: { text: "is odd", type: "absolute", tail: "" },
+        isEven: { text: "is even", type: "absolute", tail: "" }
       },
       icon: "mailbox"
     },
@@ -96,7 +101,11 @@ const schema = {
       methods: {
         is: { text: "is", type: "text", tail: "" },
         isNot: { text: "is not", type: "text", tail: "" },
-        lengthIs: { text: "length is", type: "number", tail: "characters long" }
+        contains: { text: "contains", type: "text", tail: "" },
+        doesNotContain: { text: "does not contain", type: "text", tail: "" },
+        startsWith: { text: "starts with", type: "text", tail: "" },
+        endsWith: { text: "ends with", type: "text", tail: "" },
+        lengthIs: { text: "length is", type: "number", tail: "" }
       },
       icon: "map-signs"
     },
@@ -105,34 +114,47 @@ const schema = {
       methods: {
         is: { text: "is", type: "text", tail: "" },
         isNot: { text: "is not", type: "text", tail: "" },
-        lengthIs: { text: "length is", type: "number", tail: "characters long" }
+        contains: { text: "contains", type: "text", tail: "" },
+        doesNotContain: { text: "does not contain", type: "text", tail: "" },
+        startsWith: { text: "starts with", type: "text", tail: "" },
+        endsWith: { text: "ends with", type: "text", tail: "" },
+        lengthIs: { text: "length is", type: "number", tail: "" }
       },
       icon: "map-marked"
     },
     bedrooms: {
       text: "Bedrooms",
       methods: {
-        is: { text: "is", type: "text", tail: "" },
-        isNot: { text: "is not", type: "text", tail: "" },
-        lengthIs: { text: "length is", type: "number", tail: "characters long" }
+        isEqualTo: { text: "is equal to", type: "number", tail: "" },
+        isNotEqualTo: { text: "is not equal to", type: "number", tail: "" },
+        isLessThan: { text: "is less than", type: "number", tail: "" },
+        isGreaterThan: { text: "is greater than", type: "number", tail: "" },
+        isOdd: { text: "is odd", type: "absolute", tail: "" },
+        isEven: { text: "is even", type: "absolute", tail: "" }
       },
       icon: "bed"
     },
     bathrooms: {
       text: "Bathrooms",
       methods: {
-        is: { text: "is", type: "text", tail: "" },
-        isNot: { text: "is not", type: "text", tail: "" },
-        lengthIs: { text: "length is", type: "number", tail: "characters long" }
+        isEqualTo: { text: "is equal to", type: "number", tail: "" },
+        isNotEqualTo: { text: "is not equal to", type: "number", tail: "" },
+        isLessThan: { text: "is less than", type: "number", tail: "" },
+        isGreaterThan: { text: "is greater than", type: "number", tail: "" },
+        isOdd: { text: "is odd", type: "absolute", tail: "" },
+        isEven: { text: "is even", type: "absolute", tail: "" }
       },
       icon: "bath"
     },
     postcode: {
       text: "Postcode",
       methods: {
-        is: { text: "is", type: "text", tail: "" },
-        isNot: { text: "is not", type: "text", tail: "" },
-        lengthIs: { text: "length is", type: "number", tail: "characters long" }
+        isEqualTo: { text: "is equal to", type: "number", tail: "" },
+        isNotEqualTo: { text: "is not equal to", type: "number", tail: "" },
+        isLessThan: { text: "is less than", type: "number", tail: "" },
+        isGreaterThan: { text: "is greater than", type: "number", tail: "" },
+        isOdd: { text: "is odd", type: "absolute", tail: "" },
+        isEven: { text: "is even", type: "absolute", tail: "" }
       },
       icon: "location"
     },
@@ -140,8 +162,12 @@ const schema = {
       text: "Owner",
       methods: {
         is: { text: "is", type: "text", tail: "" },
-        isYearsOld: { text: "is", type: "text", tail: "years old" },
-        lengthIs: { text: "length is", type: "number", tail: "characters long" }
+        isNot: { text: "is not", type: "text", tail: "" },
+        contains: { text: "contains", type: "text", tail: "" },
+        doesNotContain: { text: "does not contain", type: "text", tail: "" },
+        startsWith: { text: "starts with", type: "text", tail: "" },
+        endsWith: { text: "ends with", type: "text", tail: "" },
+        lengthIs: { text: "length is", type: "number", tail: "" }
       },
       icon: "user-tie"
     },
@@ -150,7 +176,11 @@ const schema = {
       methods: {
         is: { text: "is", type: "text", tail: "" },
         isNot: { text: "is not", type: "text", tail: "" },
-        lengthIs: { text: "length is", type: "number", tail: "characters long" }
+        contains: { text: "contains", type: "text", tail: "" },
+        doesNotContain: { text: "does not contain", type: "text", tail: "" },
+        startsWith: { text: "starts with", type: "text", tail: "" },
+        endsWith: { text: "ends with", type: "text", tail: "" },
+        lengthIs: { text: "length is", type: "number", tail: "" }
       },
       icon: "user"
     },
@@ -159,7 +189,11 @@ const schema = {
       methods: {
         is: { text: "is", type: "text", tail: "" },
         isNot: { text: "is not", type: "text", tail: "" },
-        lengthIs: { text: "length is", type: "number", tail: "characters long" }
+        contains: { text: "contains", type: "text", tail: "" },
+        doesNotContain: { text: "does not contain", type: "text", tail: "" },
+        startsWith: { text: "starts with", type: "text", tail: "" },
+        endsWith: { text: "ends with", type: "text", tail: "" },
+        lengthIs: { text: "length is", type: "number", tail: "" }
       },
       icon: "tags"
     },
@@ -168,7 +202,11 @@ const schema = {
       methods: {
         is: { text: "is", type: "text", tail: "" },
         isNot: { text: "is not", type: "text", tail: "" },
-        lengthIs: { text: "length is", type: "number", tail: "characters long" }
+        contains: { text: "contains", type: "text", tail: "" },
+        doesNotContain: { text: "does not contain", type: "text", tail: "" },
+        startsWith: { text: "starts with", type: "text", tail: "" },
+        endsWith: { text: "ends with", type: "text", tail: "" },
+        lengthIs: { text: "length is", type: "number", tail: "" }
       },
       icon: "clipboard-list-check"
     },
@@ -177,7 +215,11 @@ const schema = {
       methods: {
         is: { text: "is", type: "text", tail: "" },
         isNot: { text: "is not", type: "text", tail: "" },
-        lengthIs: { text: "length is", type: "number", tail: "characters long" }
+        contains: { text: "contains", type: "text", tail: "" },
+        doesNotContain: { text: "does not contain", type: "text", tail: "" },
+        startsWith: { text: "starts with", type: "text", tail: "" },
+        endsWith: { text: "ends with", type: "text", tail: "" },
+        lengthIs: { text: "length is", type: "number", tail: "" }
       },
       icon: "toggle-on"
     },
@@ -186,7 +228,11 @@ const schema = {
       methods: {
         is: { text: "is", type: "text", tail: "" },
         isNot: { text: "is not", type: "text", tail: "" },
-        lengthIs: { text: "length is", type: "number", tail: "characters long" }
+        contains: { text: "contains", type: "text", tail: "" },
+        doesNotContain: { text: "does not contain", type: "text", tail: "" },
+        startsWith: { text: "starts with", type: "text", tail: "" },
+        endsWith: { text: "ends with", type: "text", tail: "" },
+        lengthIs: { text: "length is", type: "number", tail: "" }
       },
       icon: "file-signature"
     },
@@ -195,7 +241,11 @@ const schema = {
       methods: {
         is: { text: "is", type: "text", tail: "" },
         isNot: { text: "is not", type: "text", tail: "" },
-        lengthIs: { text: "length is", type: "number", tail: "characters long" }
+        contains: { text: "contains", type: "text", tail: "" },
+        doesNotContain: { text: "does not contain", type: "text", tail: "" },
+        startsWith: { text: "starts with", type: "text", tail: "" },
+        endsWith: { text: "ends with", type: "text", tail: "" },
+        lengthIs: { text: "length is", type: "number", tail: "" }
       },
       icon: "user"
     }
@@ -203,16 +253,16 @@ const schema = {
 };
 
 const initialState = [
-  {
-    operand: "or",
-    filters: [
-      {
-        type: "street",
-        method: "is",
-        value: "test address"
-      }
-    ]
-  }
+  // {
+  //   operand: "or",
+  //   filters: [
+  //     {
+  //       type: "street",
+  //       method: "is",
+  //       value: ""
+  //     }
+  //   ]
+  // }
 ];
 
 /**
@@ -231,6 +281,21 @@ function classList() {
   return classes.join(" ");
 }
 
+const newFilterGroup = type => {
+  return {
+    operand: "and",
+    filters: [
+      {
+        type: type,
+        method: Object.keys(schema.filterTypes[type].methods)[0],
+        value: null
+      }
+    ]
+  };
+};
+
+const serializeSegment = data => JSON.stringify(data);
+
 /**
  *
  * components
@@ -241,7 +306,8 @@ const buttonResetCss = css({
   backgroundColor: "transparent",
   boxShadow: "none",
   cursor: "pointer",
-  border: "none"
+  border: "none",
+  fontSize: "0.9rem"
 });
 
 const roundedLeft = css({
@@ -265,7 +331,8 @@ const flyoutCss = css({
   color: "#333",
   borderRadius,
   border: "1px solid #eee",
-  boxShadow: "0.1rem 0.1rem 0.5rem rgba(0,0,0,0.1)"
+  boxShadow: "0.1rem 0.1rem 0.5rem rgba(0,0,0,0.1)",
+  zIndex: 900
 });
 
 const flyoutOption = css({
@@ -337,12 +404,12 @@ const AddFilterButton = ({
 }) => {
   return (
     <div className={classList(addFilterButtonCss, roundedRight)}>
-      <button
+      <div
         onClick={() => setAddingFilterFlyoutOpen(true)}
         className={classList(buttonResetCss, addFilterButtonButtonCss)}
       >
-        +
-      </button>
+        <FontAwesomeIcon style={{ color: "#777" }} icon="plus" />
+      </div>
       <div className={baselineCss}>
         {addingFilterFlyoutOpen && (
           <AddFilterFlyout
@@ -372,28 +439,33 @@ const editFilterFlyoutInputAreaCss = css({
 });
 
 const EditFilterFlyout = ({ data, done, setValue, setMethod }) => {
-  const Input =
-    schema.types[schema.filterTypes[data.type].methods[data.method].type].input;
+  const filterSchema = schema.filterTypes[data.type];
+  const { type } = filterSchema.methods[data.method];
+  const Input = type !== "absolute" ? schema.types[type].input : null;
   return (
     <div className={classList(flyoutCss, editFilterFlyoutCss)}>
-      {Object.keys(schema.filterTypes[data.type].methods).map(method => (
+      {Object.keys(filterSchema.methods).map(method => (
         <React.Fragment key={method}>
-          <div className={flyoutOption}>
+          <div
+            className={flyoutOption}
+            data-method={method}
+            onClick={e =>
+              method !== data.method && setMethod(e.target.dataset.method)
+            }
+          >
             <input
               name="FiUt3gXEG2zBnuwA39NL"
               type="radio"
               data-method={method}
               checked={method === data.method}
-              onChange={e => {
-                if (e.target.checked) setMethod(e.target.dataset.method);
-              }}
+              onChange={() => null}
             />{" "}
-            {schema.filterTypes[data.type].methods[method].text}
+            {filterSchema.methods[method].text}
           </div>
-          {data.method === method && (
+          {data.method === method && type !== "absolute" && (
             <div className={editFilterFlyoutInputAreaCss}>
               <Input value={data.value} setValue={setValue} />
-              {schema.filterTypes[data.type].methods[method].tail}
+              {filterSchema.methods[method].tail}
             </div>
           )}
         </React.Fragment>
@@ -434,6 +506,10 @@ const filterMissingValueCss = css({
   color: colorDanger
 });
 
+const FilterValue = ({ value }) => (
+  <span>{value !== null ? value : <i>...</i>} </span>
+);
+
 const Filter = ({
   data,
   clientClassList,
@@ -444,15 +520,16 @@ const Filter = ({
   setEditingFilterFlyoutOpen
 }) => {
   const filterSchema = schema.filterTypes[data.type];
+  const absoluteMethod = filterSchema.methods[data.method].type === "absolute";
   const classes = [
     filterButtonCss,
     buttonResetCss,
-    data.value === null ? filterMissingValueCss : null,
+    data.value === null && !absoluteMethod ? filterMissingValueCss : null,
     ...(clientClassList || [])
   ];
   return (
     <div className={filterCss}>
-      <button
+      <div
         className={classList(...classes)}
         onClick={
           !editingFilterFlyoutOpen
@@ -468,7 +545,7 @@ const Filter = ({
         <span className={filterMethodCss}>
           {filterSchema.methods[data.method].text}
         </span>{" "}
-        {data.value !== null ? data.value : <i>...</i>}{" "}
+        {!absoluteMethod && <FilterValue value={data.value} />}
         {filterSchema.methods[data.method].tail}
         <span
           className={css({ paddingLeft: mainPadding })}
@@ -492,7 +569,7 @@ const Filter = ({
             />
           </div>
         )}
-      </button>
+      </div>
     </div>
   );
 };
@@ -552,7 +629,7 @@ const FilterGroup = ({
     <React.Fragment key={i}>
       <Filter
         deleteFilter={() => deleteFilter(i)}
-        setValue={value => setFilterValue(i, value)}
+        setValue={value => setFilterValue(i, value !== "" ? value : null)}
         setMethod={method => setFilterMethod(i, method)}
         data={filter}
         clientClassList={i === 0 ? [roundedLeft] : null}
@@ -562,13 +639,13 @@ const FilterGroup = ({
         }
       />
       {i < data.filters.length - 1 && (
-        <button
+        <div
           className={classList(filterGroupOperandCss, buttonResetCss)}
           data-filter-group-index={filterGroupIndex}
           onClick={toggleFilterGroupOperand}
         >
           {data.operand}
-        </button>
+        </div>
       )}
     </React.Fragment>
   ));
@@ -578,11 +655,11 @@ const AddFilter = ({
   addingFilterGroup,
   addFilterGroup
 }) => (
-  <button
+  <div
     onClick={() => setAddingFilterGroup(true)}
     className={classList(actionsCss, buttonResetCss)}
   >
-    + Add Filter
+    <FontAwesomeIcon icon="plus" /> Add Filter
     {addingFilterGroup && (
       <div className={baselineCss}>
         <AddFilterFlyout
@@ -594,31 +671,36 @@ const AddFilter = ({
         />
       </div>
     )}
-  </button>
+  </div>
+);
+
+const Reset = ({ reset }) => (
+  <div onClick={reset} className={classList(actionsCss, buttonResetCss)}>
+    <FontAwesomeIcon icon="times-octagon" /> Reset
+  </div>
 );
 
 const SaveSegment = ({ state }) => (
-  <button
-    onClick={() => console.log(JSON.stringify(state))}
+  <div
+    onClick={() => console.log(serializeSegment(state))}
     className={classList(actionsCss, buttonResetCss)}
   >
     <FontAwesomeIcon icon="chart-pie-alt" /> Save Segment
-  </button>
+  </div>
 );
 
 export default () => {
-  const [filterGroups, setFilterGroups] = useState(initialState);
+  const [filterGroups, setFilterGroups] = useState(initialState.slice());
   const [operand, setOperand] = useState("and");
   const [flyout, setFlyout] = useState(false);
-  const [initDone, setInitDone] = useState(false);
 
-  if (!initDone) {
+  useEffect(() => {
     window.addEventListener("click", e => {
       //eslint-disable-next-line
-      if (!e.target.closest("#ROOOT")) setFlyout({ type: "none" });
+      if (!e.target.closest("#jFsDjIPELQC8YK7d1QqW"))
+        setFlyout({ type: "none" });
     });
-    setInitDone(true);
-  }
+  }, []);
 
   const addFilter = (filterGroupIndex, type) => {
     var newFilterGroups = filterGroups.slice(0);
@@ -636,6 +718,13 @@ export default () => {
     else setFilter(filterGroupIndex, filterIndex, null);
   };
 
+  /**
+   *
+   * takes filter group index
+   * if given data will update
+   * if given null will delete
+   *
+   */
   const setFilterGroup = (filterGroupIndex, filterGroup) => {
     if (filterGroup === null)
       setFilterGroups(
@@ -650,23 +739,16 @@ export default () => {
   };
 
   const addFilterGroup = type => {
-    setFilterGroups([
-      ...filterGroups,
-      {
-        operand: "and",
-        filters: [
-          {
-            type: type,
-            method: Object.keys(
-              schema.filterTypes[schema.filterTypesIndex[0]].methods
-            )[0],
-            value: null
-          }
-        ]
-      }
-    ]);
+    setFilterGroups([...filterGroups, newFilterGroup(type)]);
   };
 
+  /**
+   *
+   * takes filter group index and filter index
+   * if given data will update
+   * if given null will delete
+   *
+   */
   const setFilter = (filterGroupIndex, filterIndex, filter) => {
     var filters = filterGroups[filterGroupIndex].filters.slice(0, filterIndex);
     if (filter !== null) filters.push(filter);
@@ -704,7 +786,7 @@ export default () => {
   };
 
   return (
-    <div id="ROOOT">
+    <div id="jFsDjIPELQC8YK7d1QqW">
       {filterGroups.map((filterGroup, i) => (
         <div key={i} className={filterGroupCss}>
           <FilterGroup
@@ -732,12 +814,12 @@ export default () => {
             }
           />
           {i < filterGroups.length - 1 && (
-            <button
+            <div
               className={classList(globalOperandCss, buttonResetCss)}
               onClick={toggleGlobalOperand}
             >
               {operand}
-            </button>
+            </div>
           )}
           <AddFilterButton
             addingFilterFlyoutOpen={
@@ -762,7 +844,8 @@ export default () => {
         addingFilterGroup={flyout.type === "addingFilterGroup"}
         addFilterGroup={addFilterGroup}
       />
-      <SaveSegment state={{ filterGroups, operand }} />
+      <Reset reset={() => setFilterGroups(initialState.slice())} />
+      <SaveSegment state={{ operand, filterGroups }} />
     </div>
   );
 };
